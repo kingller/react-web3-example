@@ -26,10 +26,10 @@ export default function LandingPage() {
     const [toAmount, setToAmount] = useState(0);
     const [rate, setRate] = useState(0);
     const wallet = useWallet();
-    const account = wallet.account;
+    const { account } = wallet;
 
-    const fundingContractApi = new FundingContractApi(wallet);
-    const commonContractApi = new CommonContractApi(wallet);
+    const fundingContractApi = FundingContractApi(wallet);
+    const commonContractApi = CommonContractApi(wallet);
 
     return (
         <div className="swap-page">

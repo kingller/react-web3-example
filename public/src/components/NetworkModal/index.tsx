@@ -2,7 +2,7 @@ import React from 'react';
 import { Modal, Button } from 'antd';
 import './style.less';
 
-export default function NetworkModal(props) {
+export default function NetworkModal(props: { onCancel: () => void; networkError: string }) {
     const { onCancel, networkError } = props;
     return (
         <Modal

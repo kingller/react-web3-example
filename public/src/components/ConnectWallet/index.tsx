@@ -5,7 +5,7 @@ import NetworkModal from 'components/NetworkModal';
 import config, { chainIdMapping } from 'config';
 import './style.less';
 
-export default function ConnectWallet(props) {
+export default function ConnectWallet(props: { triggerConnect: boolean }) {
     const { triggerConnect } = props;
     const [networkError, setNetworkError] = useState('');
     const wallet = useWallet();
@@ -16,7 +16,9 @@ export default function ConnectWallet(props) {
             const walletChainId = parseInt(window.ethereum ? window.ethereum.chainId : '');
 
             if (walletChainId && !isNaN(walletChainId) && configChainId !== walletChainId) {
-                setNetworkError(`${chainIdMapping[configChainId]}, your wallet id is ${walletChainId}`);
+                setNetworkError(
+                    `${chainIdMapping[configChainId as 1 | 42 | 56 | 128 | 97]}, your wallet id is ${walletChainId}`
+                );
             } else {
                 setNetworkError('');
             }
@@ -35,21 +37,23 @@ export default function ConnectWallet(props) {
         });
 
         if (window.ethereum) {
-            window.ethereum.on('accountsChanged', (accounts) => {
+            window.ethereum.on('accountsChanged', (accounts: any) => {
                 connectWallet();
             });
 
-            window.ethereum.on('chainChanged', (chainId) => {
+            window.ethereum.on('chainChanged', (chainId: number) => {
                 connectWallet();
                 window.location.reload();
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (triggerConnect) {
             connectWallet();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

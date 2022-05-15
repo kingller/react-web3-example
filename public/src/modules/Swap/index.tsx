@@ -8,7 +8,7 @@ import TopCircle from '../../assets/top-circle.svg';
 import BottomCircle from '../../assets/bottom-circle.svg';
 import config from 'config';
 import { useWallet } from 'use-wallet';
-import BN from 'bignumber.js';
+import BN, { BigNumber } from 'bignumber.js';
 
 import CommonContractApi from 'contract/CommonContractApi';
 import FundingContractApi from 'contract/FundingContractApi';
@@ -19,17 +19,29 @@ import ActionButton from 'components/ActionButton';
 
 export default function SwapPage() {
     const [percent, setPercent] = useState(0);
-    const [raised, setRaised] = useState(0);
-    const [fromToken, setFromToken] = useState({});
-    const [fromAmount, setFromAmount] = useState(0);
-    const [toToken, setToToken] = useState({});
-    const [toAmount, setToAmount] = useState(0);
+    const [raised, setRaised] = useState(0 as BigNumber.Value);
+    const [fromToken, setFromToken] = useState(
+        {} as {
+            icon?: string;
+            symbol?: string;
+            balance?: BigNumber.Value;
+        }
+    );
+    const [fromAmount, setFromAmount] = useState(0 as BigNumber.Value);
+    const [toToken, setToToken] = useState(
+        {} as {
+            icon?: string;
+            symbol?: string;
+            balance?: BigNumber.Value;
+        }
+    );
+    const [toAmount, setToAmount] = useState(0 as BigNumber.Value);
     const [rate, setRate] = useState(0);
     const wallet = useWallet();
-    const account = wallet.account;
+    const { account } = wallet;
 
-    const fundingContractApi = new FundingContractApi(wallet);
-    const commonContractApi = new CommonContractApi(wallet);
+    const fundingContractApi = FundingContractApi(wallet);
+    const commonContractApi = CommonContractApi(wallet);
 
     useEffect(() => {
         setFromToken({
@@ -44,7 +56,7 @@ export default function SwapPage() {
         });
     }, []);
 
-    const fromAmountChange = (e) => {
+    const fromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFromAmount(e.target.value);
     };
 
@@ -56,7 +68,7 @@ export default function SwapPage() {
     // };
 
     const getUSDCBalance = async () => {
-        const result = await commonContractApi.balanceOf(config.tokens.usdc, wallet);
+        const result = await commonContractApi.balanceOf(config.tokens.usdc);
         setFromToken((prev) => {
             prev.balance = result;
             return {
@@ -74,23 +86,23 @@ export default function SwapPage() {
     };
 
     const getRaised = async () => {
-        const result = await commonContractApi.totalSupply(config.tokens.mos, wallet);
+        const result = await commonContractApi.totalSupply(config.tokens.mos);
 
         setRaised(result);
         setPercent(new BN(result).div(5000000).times(100).toNumber());
     };
 
     const getRate = async () => {
-        const result = await fundingContractApi.getRate(wallet);
+        const result = await fundingContractApi.getRate();
         setRate(result);
     };
 
     const doContribute = async () => {
-        if (!fromAmount || isNaN(fromAmount)) {
+        if (!fromAmount || isNaN(fromAmount as number)) {
             message.error('Please enter valid amount');
             return false;
         }
-        await fundingContractApi.contribute(fromAmount, wallet);
+        await fundingContractApi.contribute(fromAmount);
         getRaised();
         getUSDCBalance();
         getMOSBalance();
@@ -109,6 +121,7 @@ export default function SwapPage() {
             getUSDCBalance();
             getMOSBalance();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [account]);
 
     useEffect(() => {
@@ -155,7 +168,11 @@ export default function SwapPage() {
                             </div>
                         </div>
                         <div className="input-area">
-                            <Input className="input" value={fromAmount} onChange={fromAmountChange} />
+                            <Input
+                                className="input"
+                                value={fromAmount as string | number}
+                                onChange={fromAmountChange}
+                            />
                             <div className="action-hint">You Send</div>
                         </div>
                         <div className="balance">
@@ -171,7 +188,7 @@ export default function SwapPage() {
                             </div>
                         </div>
                         <div className="input-area">
-                            <Input className="input" value={toAmount} disabled />
+                            <Input className="input" value={toAmount as string | number} disabled />
                             <div className="action-hint blue">You Get</div>
                         </div>
                         <div className="balance">

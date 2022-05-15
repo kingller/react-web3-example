@@ -1,15 +1,17 @@
+import React from 'react';
 import { notification } from 'antd';
 import { web3 } from 'lib/web3';
 import mm from 'lib/mm';
+// @ts-ignore
 import { emit } from '@nextcloud/event-bus';
 import { CheckOutlined, LoadingOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
-const sleep = (ms) => {
+const sleep = (ms: number) => {
     // Unit is ms
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-function getTransactionReceiptPromise(hash) {
+function getTransactionReceiptPromise(hash: string) {
     // here we just promisify getTransactionReceipt function for convenience
     return new Promise((resolve, reject) => {
         web3.eth.getTransactionReceipt(hash, function (err, data) {
@@ -20,12 +22,12 @@ function getTransactionReceiptPromise(hash) {
     });
 }
 
-const getTxReceipt = async (txHash) => {
+const getTxReceipt = async (txHash: string) => {
     const receipt = await getTransactionReceiptPromise(txHash);
     return receipt;
 };
 
-const watchTransaction = async (txHash) => {
+const watchTransaction = async (txHash: string) => {
     const actionObj = JSON.parse(localStorage.getItem('actionObj'));
     const currentAction = actionObj[txHash];
     const msgTitle = 'Waiting for confirmation';
@@ -38,7 +40,7 @@ const watchTransaction = async (txHash) => {
             duration: null,
         });
 
-        let receipt = null;
+        let receipt: { [name: string]: any } = null;
         while (receipt === null) {
             receipt = await getTransactionReceiptPromise(txHash);
             await sleep(1000);
@@ -55,7 +57,7 @@ const watchTransaction = async (txHash) => {
                 });
                 // trigger approved action
                 if (currentAction.action) {
-                    mm.sendTransaction(currentAction.action);
+                    // mm.sendTransaction(currentAction.action);
                 }
             } else {
                 emit(txHash, false);
@@ -66,12 +68,12 @@ const watchTransaction = async (txHash) => {
                 });
             }
             // remove obj from localstorage
-            let latestObj = JSON.parse(localStorage.getItem('actionObj'));
+            const latestObj = JSON.parse(localStorage.getItem('actionObj'));
             delete latestObj[txHash];
             localStorage.setItem('actionObj', JSON.stringify(latestObj));
             // remove notification
             if (document.getElementsByClassName(txHash)) {
-                document.getElementsByClassName(txHash)[0].style.display = 'none';
+                (document.getElementsByClassName(txHash)[0] as HTMLElement).style.display = 'none';
             }
         }
     } else {

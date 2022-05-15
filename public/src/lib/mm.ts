@@ -1,15 +1,16 @@
+// @ts-ignore
 import { subscribe } from '@nextcloud/event-bus';
 import { watchTransaction } from 'lib/utils';
 
-async function listen(txHash, desc) {
+async function listen(txHash: string, desc?: any) {
     return new Promise(async (resolve, reject) => {
-        let previousActionObj = JSON.parse(localStorage.getItem('actionObj')) || {};
+        const previousActionObj: { [name: string]: any } = JSON.parse(localStorage.getItem('actionObj')) || {};
         previousActionObj[txHash] = {
             desc,
         };
         localStorage.setItem('actionObj', JSON.stringify(previousActionObj));
 
-        subscribe(txHash, (val) => {
+        subscribe(txHash, (val: any) => {
             resolve(val);
         });
 

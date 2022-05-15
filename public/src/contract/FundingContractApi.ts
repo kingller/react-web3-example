@@ -2,11 +2,13 @@ import Web3 from 'web3';
 import config from '../config';
 import FundingAbi from './abi/Funding.json';
 import mm from 'lib/mm';
-import BN from 'bignumber.js';
+import BN, { BigNumber } from 'bignumber.js';
+import { AbiItem } from 'web3-utils';
+import { Wallet } from 'use-wallet/dist/cjs/types';
 
-function FundingContractApi(wallet) {
+function FundingContractApi(wallet: Wallet) {
     const web3 = new Web3(wallet.ethereum);
-    const contract = new web3.eth.Contract(FundingAbi, config.contracts.funding);
+    const contract = new web3.eth.Contract(FundingAbi as AbiItem[], config.contracts.funding);
     const { account } = wallet;
 
     return {
@@ -14,7 +16,7 @@ function FundingContractApi(wallet) {
             const result = await contract.methods.rate().call();
             return new BN(result).shiftedBy(-12).toNumber();
         },
-        async contribute(amount) {
+        async contribute(amount: BigNumber.Value) {
             const amountInWei = new BN(amount).shiftedBy(config.tokens.usdc.decimals).toString();
 
             console.log('amount in wei', amountInWei);
@@ -24,14 +26,14 @@ function FundingContractApi(wallet) {
                     .send({
                         from: account,
                     })
-                    .on('transactionHash', function (transactionHash) {
+                    .on('transactionHash', function (transactionHash: string) {
                         mm.listen(transactionHash, 'Contribute');
                         return transactionHash;
                     })
-                    .on('receipt', (receipt) => {
+                    .on('receipt', (receipt: any) => {
                         resolve(receipt);
                     })
-                    .on('error', function (error) {
+                    .on('error', function (error: any) {
                         reject(error);
                         console.log('error', error);
                     });

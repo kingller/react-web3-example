@@ -14,7 +14,7 @@ const DevServer = require('webpack-dev-server');
 
 const port = process.env.npm_package_config_port;
 const target = `${process.cwd()}/dist`;
-const REACT_APP_CHAIN_ENV = 'mainnet';
+const REACT_APP_CHAIN_ENV = 'eth';
 
 const ROOT_PATH = require('path').resolve(process.cwd());
 
@@ -46,6 +46,7 @@ module.exports = function (env, args = {}) {
                                 test: /\.tsx?$/,
                                 loader: 'babel-loader',
                                 options: {
+                                    extends: 'babel-config-pandora',
                                     presets: ['@babel/preset-typescript'],
                                     plugins: [['@babel/plugin-transform-typescript', { allowNamespaces: true }]],
                                 },

@@ -4,15 +4,18 @@ import './app.less';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { UseWalletProvider } from 'use-wallet';
-// import config from 'config';
+import config from 'config';
 import reportWebVitals from './reportWebVitals';
 
 import router from './router';
 
 const App = (
     <UseWalletProvider
-    // chainId={config.chainId}
-    >
+        connectors={{
+            injected: {
+                chainId: [config.chainId],
+            },
+        }}>
         {router}
     </UseWalletProvider>
 );

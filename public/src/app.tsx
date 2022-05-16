@@ -1,4 +1,4 @@
-import '@babel/polyfill';
+import 'core-js';
 import './style.less';
 import './app.less';
 import React from 'react';

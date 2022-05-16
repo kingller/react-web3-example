@@ -37,9 +37,9 @@ const MainWithRouter = withRouter(
                             <div className={`page-body ${module}`}>
                                 <ModuleWrapper>
                                     <RouterSwitch>
-                                        <Route component={Landing} path="/" />
+                                        <Route component={Landing} path="/landing" />
                                         <Route path="/swap" component={Swap} />
-                                        <Redirect to="/" />
+                                        <Redirect to="/landing" />
                                     </RouterSwitch>
                                 </ModuleWrapper>
                             </div>
